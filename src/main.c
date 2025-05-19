@@ -2,71 +2,79 @@
 #include <stdio.h>
 #include <math.h>
 
-void DrawGLScene();
+//#define TOOLS_DEFINE_NUMERIC_LIMITS
+#define TOOLS_DEFINE_HASHING
+#define TOOLS_DEFINE_DYN_ARRAY
+#include "tools.h"
 
-float rtri;				// angle for rotating the triangle
+// asset generated headers (grit)
+#include <starField.h>
+#include <planet.h>
+#include <splash.h>
 
-int main() {
+#include <nds.h>
 
-	glInit();
-	videoSetMode(MODE_0_3D); // Setup the Main screen for 3D
-	vramSetBankC(VRAM_C_MAIN_BG_0x06000000); //map some vram to background for printing
-	consoleInit(0,1, BgType_Text4bpp, BgSize_T_256x256, 31,0, true, true);
-	bgSetPriority(0, 1);//put bg 0 at a lower priority than the text background
+void init_video() {
+  vramSetPrimaryBanks(VRAM_A_MAIN_BG_0x06000000, VRAM_B_MAIN_BG_0x06020000, VRAM_C_SUB_BG_0x06200000, VRAM_D_LCD);
+  videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
+  videoSetModeSub(MODE_5_2D | DISPLAY_BG3_ACTIVE);
+}
+void init_backgrounds() {
 
+  REG_BG3CNT = BG_BMP16_256x256 | BG_BMP_BASE(0) | BG_PRIORITY(3);
+  REG_BG3PA = 1 << 8;
+  REG_BG3PB = 0;
+  REG_BG3PC = 0;
+  REG_BG3PD = 1 << 8;
+  REG_BG3X = 0;
+  REG_BG3Y = 0;
 
-	// enable antialiasing
-	glEnable(GL_ANTIALIAS);
-	// setup the rear plane
-	glClearColor(0,0,0,31); // BG must be opaque for AA to work
-	glClearPolyID(63); // BG must have a unique polygon ID for AA to work
-	glClearDepth(0x7FFF);
-	// Set our viewport to be the same size as the screen
-	glViewport(0,0,255,191);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(70, 256.0 / 192.0, 0.1, 100);
-	//ds specific, several attributes can be set here
-	glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE);
-	// Set the current matrix to be the model matrix
-	glMatrixMode(GL_MODELVIEW);
-	iprintf("\tnds-test\n");
-	iprintf("\tThis is a Demo!\n");
+  REG_BG2CNT = BG_BMP16_128x128 | BG_BMP_BASE(8) | BG_PRIORITY(2);
+  REG_BG2PA = 1 << 8;
+  REG_BG2PB = 0;
+  REG_BG2PC = 0;
+  REG_BG2PD = 1 << 8;
+  REG_BG2X = -(SCREEN_WIDTH / 2 - 64) << 8;
+  REG_BG2Y = -(SCREEN_HEIGHT / 2 - 64) << 8;
 
-	while (pmMainLoop()) {
-		DrawGLScene();
-		// flush to screen
-		glFlush(0);
-		// wait for the screen to refresh
-		swiWaitForVBlank();
-		scanKeys();
-		int keys = keysDown();
-		if(keys & KEY_START) break;
-		printf("\x1b[15;5H rtri  = %f     \n", rtri);
-		rtri+=0.9f;
-		rtri  = fmodf( rtri , 360 );
-	}
-
-	return 0;
+  REG_BG3CNT_SUB = BG_BMP16_256x256 | BG_BMP_BASE(0) | BG_PRIORITY(3); 
+  REG_BG3PA_SUB = 1 << 8;
+  REG_BG3PB_SUB = 0;
+  REG_BG3PC_SUB = 0;
+  REG_BG3PD_SUB = 1 << 8;
+  REG_BG3X_SUB = 0;
+  REG_BG3Y_SUB = 0;
 }
 
-void DrawGLScene() {
+static const int DMA_CHANNEL = 3;
+void render_starfield() {
+  dmaCopyHalfWords(DMA_CHANNEL, starFieldBitmap, (u16*)BG_BMP_RAM(0), starFieldBitmapLen); 
+}
+void render_planet() {
+  dmaCopyHalfWords(DMA_CHANNEL, planetBitmap, (u16*)BG_BMP_RAM(8), planetBitmapLen); 
+}
+void render_splash_screen() {
+  dmaCopyHalfWords(DMA_CHANNEL, splashBitmap, (u16*)BG_BMP_RAM_SUB(0), splashBitmapLen); 
+}
 
-	//ds does this automagically*open>///glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 
-	glLoadIdentity();								// Reset The Current Modelview Matrix
-	//glTranslatef(-1.5f,0.0f,-6.0f);					// Move Left 1.5 Units And Into The Screen 6.0
-	glTranslatef(0.0f,0.0f,-6.0f);					// Move Left 1.5 Units And Into The Screen 6.0
-	glScalef(2,2,2);					// Move Left 1.5 Units And Into The Screen 6.0
-	glRotatef(rtri,0.0f,1.0f,0.0f);					// Rotate The Triangle On The Y axis ( NEW )
-	glColor3f(1, 1, 1);								// set the vertex color
-	glBegin(GL_TRIANGLES);							// Start Drawing A Triangle
-		glColor3f(1.0f,0.0f,0.0f);					// Set Top Point Of Triangle To Red
-		glVertex3f( 0.0f, 1.0f, 0.0f);				// First Point Of The Triangle
-		glColor3f(0.0f,1.0f,0.0f);					// Set Left Point Of Triangle To Green
-		glVertex3f(-1.0f,-1.0f, 0.0f);				// Second Point Of The Triangle
-		glColor3f(0.0f,0.0f,1.0f);					// Set Right Point Of Triangle To Blue
-		glVertex3f( 1.0f,-1.0f, 0.0f);				// Third Point Of The Triangle
-	glEnd();										// Done Drawing The Triangle
-	glLoadIdentity();								// Reset The Current Modelview Matrix
+
+
+
+int main() {
+  powerOn(POWER_ALL_2D);
+  lcdMainOnBottom();
+  init_video();
+  init_backgrounds();
+
+  render_starfield();
+  render_planet();
+  render_splash_screen();
+
+  for (;;) {
+    //u32 ticks = cpuGetTiming();
+    //REG_BG3PA_SUB = 1<<8 * (int)(ticks / 60.0); 
+  }
+
+  return 0;
 }

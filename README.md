@@ -2,7 +2,8 @@
 
 ## Description
 Currently just a small demo. </br>
-Great intro: https://www.patater.com/manual-git/cover.html
+Great intro: https://www.patater.com/manual-git/cover.html </br>
+Hardware basics: https://www.youtube.com/watch?v=kBgQJJ93nFM </br>
 
 ## Building with devkitPro
 
