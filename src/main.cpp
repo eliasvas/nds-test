@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <math.h>
 #include "sprite_util.h"
+#include "input.h"
+#include "audio.h"
 
-//#define TOOLS_DEFINE_NUMERIC_LIMITS
 #define TOOLS_DEFINE_HASHING
 #define TOOLS_DEFINE_DYN_ARRAY
 #include "tools.h"
@@ -15,8 +16,6 @@
 #include <splash.h>
 #include <orangeShuttle.h>
 #include <moon.h>
-
-#include <nds.h>
 
 void init_video() {
   vramSetPrimaryBanks(VRAM_A_MAIN_BG_0x06000000, VRAM_B_MAIN_BG_0x06020000, VRAM_C_SUB_BG_0x06200000, VRAM_D_LCD);
@@ -153,6 +152,8 @@ int main() {
   init_video();
   init_backgrounds();
 
+  Audio::init();
+
   SpriteInfo spriteInfo[SPRITE_COUNT];
   OAMTable *oam = new OAMTable();
   Sprite::oam::init(oam);
@@ -167,9 +168,16 @@ int main() {
 
   for (;;) {
     swiWaitForVBlank();
-    spriteInfo[0].entry->x += 1;
-    render_shuttle(&spriteInfo[0]);
-    Sprite::oam::update(oam);
+    Input::update();
+
+    if (Input::key_pressed(Key::TOUCH)) {
+      Audio::play_sfx(SFX_HELLO);
+    }
+    if (Input::key_down(Key::TOUCH)) {
+      spriteInfo[0].entry->x += 1;
+      render_shuttle(&spriteInfo[0]);
+      Sprite::oam::update(oam);
+    }
 
     //u32 ticks = cpuGetTiming();
     //REG_BG3PA_SUB = 1<<8 * (int)(ticks / 60.0); 
