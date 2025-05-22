@@ -9,10 +9,10 @@
 #include "soundbank_bin.h"
 
 namespace Audio {
-  void init() {
+  static inline void init() {
     mmInitDefaultMem((mm_addr)soundbank_bin);
   }
-  void play_sfx (u32 sfx_id) {
+  static inline void play_sfx (u32 sfx_id) {
     mmEffect(sfx_id);
   }
 };

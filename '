@@ -11,7 +11,6 @@ int main(void) {
   CoreEngine::init();
 	while(true) {
     CoreEngine::update();
-
     if (CoreEngine::is_bottom_screen_active()) {
       touchPosition tp = Input::get_tp();
       int red = 127;
@@ -22,7 +21,8 @@ int main(void) {
       glEnd2D();
     } else {
       glBegin2D();
-      glBoxFilled(SCREEN_WIDTH/2-50,SCREEN_HEIGHT/2-50,SCREEN_WIDTH/2+50,SCREEN_HEIGHT/2+50, RGB15(50,50,120));
+      //glBoxFilled(SCREEN_WIDTH-50, SCREEN_HEIGHT - 50,100,100, RGB15(50,50,120));
+      glBoxFilled(0,0,200,200, RGB15(50,50,120));
       glEnd2D();
     }
 

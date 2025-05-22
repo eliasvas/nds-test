@@ -20,26 +20,27 @@ enum Key {
   K(LID),
 };
 
-namespace Input {
-  touchPosition tp;
+struct Input {
+  static touchPosition tp; // Sigh. This has to be defined in a .c file
+
   // should be called at the beginning of each frame
-  void update() {
+  static inline void update() {
     scanKeys();
     touchRead(&tp);
   }
-  touchPosition get_tp() {
+  static inline touchPosition get_tp() {
     return tp;
   }
-  bool key_down(Key key) {
+  static inline bool key_down(Key key) {
     return keysHeld() & key;
   }
-  bool key_released(Key key) {
+  static inline bool key_released(Key key) {
     return keysUp() & key;
   }
-  bool key_pressed(Key key) {
+  static inline bool key_pressed(Key key) {
     return keysDown() & key;
   }
-  bool key_up(Key key) {
+  static inline bool key_up(Key key) {
     return !key_down(key);
   }
 };
