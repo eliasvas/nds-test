@@ -2,8 +2,12 @@
 
 ## Description
 Currently just a small demo. </br>
+devkitPro installation: https://devkitpro.org/wiki/Getting_Started </br>
 Great intro: https://www.patater.com/manual-git/cover.html </br>
-Hardware basics: https://www.youtube.com/watch?v=kBgQJJ93nFM </br>
+The Bible: https://problemkaputt.de/gbatek.htm </br>
+GBA Ref (pretty similar): https://gbadev.net/tonc/intro.html </br>
+nds.h: https://github.com/devkitPro/libnds/blob/master/include/nds.h </br>
+examples: https://github.com/devkitPro/nds-examples </br>
 
 ## Building with devkitPro
 
