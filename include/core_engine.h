@@ -5,15 +5,15 @@
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
-#include "sprite_util.h"
 #include "gl2d.h"
 #include "input.h"
 #include "audio.h"
+#include "font.h"
 #include "tools.h"
-
 
 struct CoreEngine {
   static u32 frame_idx;
+  static Font default_font;
   // ---------------------
   static void init();
   static void deinit();

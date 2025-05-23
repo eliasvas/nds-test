@@ -4,8 +4,9 @@
 #include <starField.h>
 #include <planet.h>
 #include <splash.h>
-#include <orangeShuttle.h>
 #include <moon.h>
+
+extern glImage Shuttle[1];
 
 int main(void) {
   CoreEngine::init();
@@ -18,7 +19,9 @@ int main(void) {
       int green = 0;
       int blue = 0;
       glBegin2D();
+      CoreEngine::default_font.print("Hello", 100,100);
       glBoxFilled(tp.px-50, tp.py-50, tp.px + 50, tp.py + 50, RGB15(red,green,blue));
+      //glSprite(0, 0, GL_FLIP_NONE,Shuttle);
       glEnd2D();
     } else {
       glBegin2D();
