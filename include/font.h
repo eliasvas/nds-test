@@ -8,6 +8,7 @@ struct Font {
   void fill_font_tc(unsigned int *tc);
   void load();
   void print(const char *text, int posx, int posy);
+  void print_centered(const char *text, int posx, int posy);
 };
 
 #endif
